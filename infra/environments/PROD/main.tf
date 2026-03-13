@@ -1,21 +1,5 @@
-terraform {
-  required_version = ">= 1.0"
-
-  backend "s3" {
-    bucket         = "${var.vpc_name}-tfstate"
-    key            = "prod/terraform.tfstate"
-    region         = var.region
-    dynamodb_table = "${var.vpc_name}-tf-lock"
-    encrypt        = true
-  }
-}
-
 locals {
   all_subnets = concat(var.public_subnets, var.private_subnets)
-}
-
-provider "aws" {
-  region = var.region
 }
 
 module "vpc" {

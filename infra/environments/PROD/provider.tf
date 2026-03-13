@@ -1,6 +1,14 @@
 terraform {
   required_version = ">= 1.15.0"
 
+  backend "s3" {
+    bucket         = "${var.vpc_name}-tfstate"
+    key            = "prod/terraform.tfstate"
+    region         = var.region
+    dynamodb_table = "${var.vpc_name}-tf-lock"
+    encrypt        = true
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
