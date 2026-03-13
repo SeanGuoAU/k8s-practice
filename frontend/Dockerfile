@@ -9,7 +9,7 @@ RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
 
 # Install dependencies with frozen lockfile and limited concurrency
-RUN pnpm install --frozen-lockfile --network-concurrency 1
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY . .
