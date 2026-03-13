@@ -36,15 +36,3 @@ module "ecr" {
   name = var.ecr_name
   tags = var.common_tags
 }
-
-output "vpc_id" {
-  value = module.vpc.vpc_id
-}
-
-output "eks_endpoint" {
-  value = module.eks.cluster_endpoint
-}
-
-output "ecr_url" {
-  value = module.ecr.repository_url
-}
