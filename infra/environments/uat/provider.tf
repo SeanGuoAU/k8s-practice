@@ -2,10 +2,10 @@ terraform {
   required_version = ">= 1.14.7"
 
   backend "s3" {
-    bucket         = "${var.vpc_name}-tfstate"
+    bucket         = "k8s-uat-tfstate"
     key            = "uat/terraform.tfstate"
-    region         = var.region
-    dynamodb_table = "${var.vpc_name}-tf-lock"
+    region         = "ap-southeast-2"
+    dynamodb_table = "k8s-uat-tf-lock"
     encrypt        = true
   }
 
