@@ -5,14 +5,14 @@ services:
   frontend:
     container_name: dispatchai-frontend
     build:
-      context: ./frontend
+      context: .
       dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: development
     volumes:
-      - ./frontend:/app
+      - .:/app
       - /app/node_modules
       - /app/.next
     restart: unless-stopped
