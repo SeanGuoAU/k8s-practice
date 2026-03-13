@@ -2,7 +2,7 @@ terraform {
   required_version = ">= 1.14.7"
 
   backend "s3" {
-    bucket         = "k8s-prod-tfstate"
+    bucket         = "sg-test1-tfstate"
     key            = "prod/terraform.tfstate"
     region         = "ap-southeast-2"
     encrypt        = true
