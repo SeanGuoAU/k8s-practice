@@ -1,0 +1,66 @@
+terraform {
+  required_version = ">= 1.0"
+
+  backend "s3" {
+    bucket         = "${var.vpc_name}-tfstate"
+    key            = "prod/terraform.tfstate"
+    region         = var.region
+    dynamodb_table = "${var.vpc_name}-tf-lock"
+    encrypt        = true
+  }
+}
+
+locals {
+  all_subnets = concat(var.public_subnets, var.private_subnets)
+}
+
+provider "aws" {
+  region = var.region
+}
+
+module "vpc" {
+  source = "../../modules/vpc"
+
+  name               = var.vpc_name
+  public_subnets     = var.public_subnets
+  private_subnets    = var.private_subnets
+  availability_zones = var.availability_zones
+  tags               = var.common_tags
+}
+
+module "iam" {
+  source = "../../modules/iam"
+
+  cluster_role_name    = var.cluster_role_name
+  node_group_role_name = var.node_group_role_name
+}
+
+module "eks" {
+  source = "../../modules/eks"
+
+  cluster_name        = var.cluster_name
+  cluster_role_arn    = module.iam.cluster_role_arn
+  node_group_name     = var.node_group_name
+  node_group_role_arn = module.iam.node_group_role_arn
+  subnet_ids          = local.all_subnets
+  tags                = var.common_tags
+}
+
+module "ecr" {
+  source = "../../modules/ecr"
+
+  name = var.ecr_name
+  tags = var.common_tags
+}
+
+output "vpc_id" {
+  value = module.vpc.vpc_id
+}
+
+output "eks_endpoint" {
+  value = module.eks.cluster_endpoint
+}
+
+output "ecr_url" {
+  value = module.ecr.repository_url
+}
