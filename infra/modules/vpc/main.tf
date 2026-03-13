@@ -113,7 +113,7 @@ resource "aws_nat_gateway" "this" {
 
 # Terraform state backend resources
 resource "aws_s3_bucket" "tfstate" {
-  bucket = "${var.name}-tfstate"
+  bucket = "${var.name}-${var.environment}-tfstate"
   acl    = "private"
 
   versioning {
@@ -129,12 +129,12 @@ resource "aws_s3_bucket" "tfstate" {
   }
 
   tags = merge({
-    Name = "${var.name}-tfstate"
+    Name = "${var.name}-${var.environment}-tfstate"
   }, var.tags)
 }
 
 resource "aws_dynamodb_table" "tf_lock" {
-  name         = "${var.name}-tf-lock"
+  name         = "${var.name}-${var.environment}-tf-lock"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
 
@@ -144,6 +144,6 @@ resource "aws_dynamodb_table" "tf_lock" {
   }
 
   tags = merge({
-    Name = "${var.name}-tf-lock"
+    Name = "${var.name}-${var.environment}-tf-lock"
   }, var.tags)
 }
