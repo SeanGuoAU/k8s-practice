@@ -5,7 +5,6 @@ terraform {
     bucket         = "k8s-uat-tfstate"
     key            = "uat/terraform.tfstate"
     region         = "ap-southeast-2"
-    dynamodb_table = "k8s-uat-tf-lock"
     encrypt        = true
   }
 

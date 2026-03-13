@@ -1,9 +1,9 @@
 terraform {
-  required_version = ">= 1.14.7"
+  required_version = ">= 1.15.0"
 
   backend "s3" {
-    bucket         = "k8s-prod-tfstate"
-    key            = "prod/terraform.tfstate"
+    bucket         = "k8s-uat-tfstate"
+    key            = "uat/terraform.tfstate"
     region         = "ap-southeast-2"
     encrypt        = true
   }
