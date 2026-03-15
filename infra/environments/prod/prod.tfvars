@@ -4,6 +4,7 @@ public_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
 private_subnets = ["10.0.3.0/24", "10.0.4.0/24"]
 vpc_name = "k8s"
 cluster_name = "k8s"
+cluster_version = "1.35"
 node_group_name = "k8s"
 ecr_name = "k8s"
 cluster_role_name = "k8s-cluster-role"

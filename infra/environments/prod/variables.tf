@@ -37,6 +37,12 @@ variable "cluster_name" {
   default     = "k8s"
 }
 
+variable "cluster_version" {
+  description = "Kubernetes version for the EKS cluster"
+  type        = string
+  default     = "1.31"
+}
+
 variable "node_group_name" {
   description = "Name of the EKS node group"
   type        = string

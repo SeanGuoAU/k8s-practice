@@ -1,21 +1,19 @@
 version: '3.9'
 
 services:
-  # Frontend (Next.js)
   frontend:
     container_name: dispatchai-frontend
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+    image: dispatchai-frontend:prod
     ports:
       - "3000:3000"
     environment:
-      NODE_ENV: development
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
+      NODE_ENV: production
     restart: unless-stopped
+    networks:
+      - dispatchai-network
 
 networks:
   dispatchai-network:

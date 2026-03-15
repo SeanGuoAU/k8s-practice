@@ -46,16 +46,14 @@ variable "create_nat_gateway" {
   default     = false
 }
 
-# flow log support removed; state backend will be managed separately
-
-variable "tags" {
-  description = "A map of tags to add to all resources"
-  type        = map(string)
-  default     = {}
-}
-
 variable "environment" {
-  description = "Environment name (e.g., prod, uat)"
+  description = "Environment name"
   type        = string
   default     = ""
+}
+
+variable "tags" {
+  description = "A map of tags to assign to resources"
+  type        = map(string)
+  default     = {}
 }

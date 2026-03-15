@@ -19,6 +19,12 @@ variable "private_subnets" {
   type        = list(string)
 }
 
+variable "cidr_block" {
+  description = "The CIDR block for the VPC"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
 variable "vpc_name" {
   description = "Name of the VPC"
   type        = string
@@ -31,10 +37,40 @@ variable "cluster_name" {
   default     = "k8s"
 }
 
+variable "cluster_version" {
+  description = "Kubernetes version for the EKS cluster"
+  type        = string
+  default     = "1.31"
+}
+
 variable "node_group_name" {
   description = "Name of the EKS node group"
   type        = string
   default     = "k8s"
+}
+
+variable "desired_size" {
+  description = "Desired number of worker nodes"
+  type        = number
+  default     = 2
+}
+
+variable "max_size" {
+  description = "Maximum number of worker nodes"
+  type        = number
+  default     = 4
+}
+
+variable "min_size" {
+  description = "Minimum number of worker nodes"
+  type        = number
+  default     = 1
+}
+
+variable "instance_types" {
+  description = "List of instance types for the node group"
+  type        = list(string)
+  default     = ["t3.medium"]
 }
 
 variable "ecr_name" {

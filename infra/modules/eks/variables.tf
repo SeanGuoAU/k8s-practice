@@ -96,3 +96,30 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+# ------------------------------------------------------------------ #
+#  Addon versions — null means use the AWS-recommended default        #
+# ------------------------------------------------------------------ #
+variable "addon_vpc_cni_version" {
+  description = "Version of the vpc-cni addon (null = use cluster default)"
+  type        = string
+  default     = null
+}
+
+variable "addon_coredns_version" {
+  description = "Version of the coredns addon (null = use cluster default)"
+  type        = string
+  default     = null
+}
+
+variable "addon_kube_proxy_version" {
+  description = "Version of the kube-proxy addon (null = use cluster default)"
+  type        = string
+  default     = null
+}
+
+variable "addon_ebs_csi_version" {
+  description = "Version of the aws-ebs-csi-driver addon (null = use cluster default)"
+  type        = string
+  default     = null
+}

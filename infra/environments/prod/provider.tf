@@ -5,7 +5,7 @@ terraform {
     bucket         = "sg-test1-tfstate"
     key            = "prod/terraform.tfstate"
     region         = "ap-southeast-2"
-    encrypt        = true
+    use_lockfile   = true
   }
 
   required_providers {

@@ -1,0 +1,15 @@
+# Terraform local state, cache, and providers
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Sensitive variable overrides
+*.tfvars
+*.tfvars.json
+!infra/environments/prod/prod.tfvars
+!infra/environments/uat/uat.tfvars

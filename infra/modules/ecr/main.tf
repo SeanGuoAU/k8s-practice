@@ -10,12 +10,12 @@ resource "aws_ecr_repository" "test1" {
     encryption_type = var.encryption ? "AES256" : "NONE"
   }
 
-  dynamic "lifecycle_policy" {
-    for_each = var.lifecycle_policy != "" ? [1] : []
-    content {
-      policy = var.lifecycle_policy
-    }
-  }
-
   tags = var.tags
+}
+
+resource "aws_ecr_lifecycle_policy" "test1" {
+  count      = var.lifecycle_policy != "" ? 1 : 0
+  repository = aws_ecr_repository.test1.name
+
+  policy = var.lifecycle_policy
 }

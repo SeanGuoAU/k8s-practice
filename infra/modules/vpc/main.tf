@@ -99,7 +99,6 @@ resource "aws_route_table_association" "private" {
 # Optionally create NAT gateway in the first public subnet
 resource "aws_eip" "nat" {
   count = var.create_nat_gateway ? 1 : 0
-  vpc   = true
 }
 
 resource "aws_nat_gateway" "this" {
@@ -113,37 +112,35 @@ resource "aws_nat_gateway" "this" {
 
 # Terraform state backend resources
 resource "aws_s3_bucket" "tfstate" {
-  bucket = "${var.name}-${var.environment}-tfstate"
-  acl    = "private"
-
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
+  bucket = var.environment != "" ? "${var.name}-${var.environment}-tfstate" : "${var.name}-tfstate"
 
   tags = merge({
-    Name = "${var.name}-${var.environment}-tfstate"
+    Name = var.environment != "" ? "${var.name}-${var.environment}-tfstate" : "${var.name}-tfstate"
   }, var.tags)
 }
 
-resource "aws_dynamodb_table" "tf_lock" {
-  name         = "${var.name}-${var.environment}-tf-lock"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "LockID"
-
-  attribute {
-    name = "LockID"
-    type = "S"
+resource "aws_s3_bucket_versioning" "tfstate" {
+  bucket = aws_s3_bucket.tfstate.id
+  versioning_configuration {
+    status = "Enabled"
   }
+}
 
-  tags = merge({
-    Name = "${var.name}-${var.environment}-tf-lock"
-  }, var.tags)
+resource "aws_s3_bucket_server_side_encryption_configuration" "tfstate" {
+  bucket = aws_s3_bucket.tfstate.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "tfstate" {
+  bucket = aws_s3_bucket.tfstate.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
