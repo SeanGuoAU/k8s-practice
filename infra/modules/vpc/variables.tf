@@ -46,11 +46,7 @@ variable "create_nat_gateway" {
   default     = false
 }
 
-variable "environment" {
-  description = "Environment name"
-  type        = string
-  default     = ""
-}
+
 
 variable "tags" {
   description = "A map of tags to assign to resources"
