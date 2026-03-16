@@ -40,10 +40,13 @@ module "eks" {
   max_size            = var.max_size
   min_size            = var.min_size
   instance_types      = var.instance_types
-  subnet_ids          = local.all_subnets
-  cluster_subnet_ids  = local.all_subnets
-  node_group_subnet_ids = module.vpc.public_subnets
-  tags                = var.common_tags
+  subnet_ids                         = local.all_subnets
+  cluster_subnet_ids                 = local.all_subnets
+  node_group_subnet_ids              = module.vpc.public_subnets
+  github_actions_principal_arn       = module.iam.github_actions_role_arn
+  grant_github_actions_cluster_admin = var.grant_github_actions_cluster_admin
+  cluster_admin_principal_arn        = var.cluster_admin_principal_arn
+  tags                               = var.common_tags
 }
 
 module "ecr" {
@@ -51,28 +54,4 @@ module "ecr" {
 
   name = var.ecr_name
   tags = var.common_tags
-}
-
-resource "aws_eks_access_entry" "github_actions" {
-  count = var.github_repository != "" ? 1 : 0
-
-  cluster_name  = module.eks.cluster_id
-  principal_arn = module.iam.github_actions_role_arn
-  type          = "STANDARD"
-
-  depends_on = [module.eks, module.iam]
-}
-
-resource "aws_eks_access_policy_association" "github_actions_cluster_admin" {
-  count = var.github_repository != "" && var.grant_github_actions_cluster_admin ? 1 : 0
-
-  cluster_name  = module.eks.cluster_id
-  principal_arn = module.iam.github_actions_role_arn
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-
-  access_scope {
-    type = "cluster"
-  }
-
-  depends_on = [aws_eks_access_entry.github_actions]
 }

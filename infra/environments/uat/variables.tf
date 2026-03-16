@@ -126,3 +126,9 @@ variable "grant_github_actions_cluster_admin" {
   type        = bool
   default     = true
 }
+
+variable "cluster_admin_principal_arn" {
+  description = "Optional IAM role/user ARN to grant EKS cluster-admin access for human operators"
+  type        = string
+  default     = ""
+}

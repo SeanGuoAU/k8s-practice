@@ -146,3 +146,21 @@ variable "addon_ebs_csi_version" {
   type        = string
   default     = null
 }
+
+variable "github_actions_principal_arn" {
+  description = "IAM role ARN for GitHub Actions to grant EKS cluster access (empty = skip)"
+  type        = string
+  default     = ""
+}
+
+variable "grant_github_actions_cluster_admin" {
+  description = "Whether to grant the GitHub Actions role EKS cluster-admin access"
+  type        = bool
+  default     = true
+}
+
+variable "cluster_admin_principal_arn" {
+  description = "Optional IAM role/user ARN to grant EKS cluster-admin access for human operators (empty = skip)"
+  type        = string
+  default     = ""
+}

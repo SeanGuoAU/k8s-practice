@@ -180,3 +180,51 @@ resource "aws_eks_addon" "ebs_csi" {
 
   depends_on = [aws_eks_node_group.test1]
 }
+
+# ------------------------------------------------------------------ #
+#  EKS Access Entries                                                  #
+# ------------------------------------------------------------------ #
+
+resource "aws_eks_access_entry" "github_actions" {
+  count = var.github_actions_principal_arn != "" ? 1 : 0
+
+  cluster_name  = aws_eks_cluster.test1.id
+  principal_arn = var.github_actions_principal_arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "github_actions_cluster_admin" {
+  count = var.github_actions_principal_arn != "" && var.grant_github_actions_cluster_admin ? 1 : 0
+
+  cluster_name  = aws_eks_cluster.test1.id
+  principal_arn = var.github_actions_principal_arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.github_actions]
+}
+
+resource "aws_eks_access_entry" "human_admin" {
+  count = var.cluster_admin_principal_arn != "" ? 1 : 0
+
+  cluster_name  = aws_eks_cluster.test1.id
+  principal_arn = var.cluster_admin_principal_arn
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "human_admin_cluster_admin" {
+  count = var.cluster_admin_principal_arn != "" ? 1 : 0
+
+  cluster_name  = aws_eks_cluster.test1.id
+  principal_arn = var.cluster_admin_principal_arn
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_eks_access_entry.human_admin]
+}
