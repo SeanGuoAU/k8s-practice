@@ -43,6 +43,12 @@ variable "cluster_version" {
   default     = "1.31"
 }
 
+variable "eks_authentication_mode" {
+  description = "EKS auth mode required for access entry resources"
+  type        = string
+  default     = "API_AND_CONFIG_MAP"
+}
+
 variable "node_group_name" {
   description = "Name of the EKS node group"
   type        = string
@@ -65,4 +71,28 @@ variable "node_group_role_name" {
   description = "Name of the EKS node group IAM role"
   type        = string
   default     = "k8s-node-group-role"
+}
+
+variable "github_repository" {
+  description = "GitHub repository in owner/repo format allowed to assume the CI role"
+  type        = string
+  default     = ""
+}
+
+variable "github_branches" {
+  description = "Git branches allowed to assume the CI role"
+  type        = list(string)
+  default     = ["main"]
+}
+
+variable "github_actions_role_name" {
+  description = "IAM role name for GitHub Actions CI/CD"
+  type        = string
+  default     = "github-actions-k8s-deploy-prod"
+}
+
+variable "grant_github_actions_cluster_admin" {
+  description = "Whether to grant GitHub Actions role EKS cluster-admin access"
+  type        = bool
+  default     = true
 }

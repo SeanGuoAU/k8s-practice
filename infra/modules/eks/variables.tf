@@ -20,6 +20,18 @@ variable "subnet_ids" {
   type        = list(string)
 }
 
+variable "cluster_subnet_ids" {
+  description = "Optional list of subnet IDs for the EKS control plane ENIs (defaults to subnet_ids)"
+  type        = list(string)
+  default     = null
+}
+
+variable "node_group_subnet_ids" {
+  description = "Optional list of subnet IDs for the EKS managed node group (defaults to subnet_ids)"
+  type        = list(string)
+  default     = null
+}
+
 variable "endpoint_private_access" {
   description = "Whether the Amazon EKS private API server endpoint is enabled"
   type        = bool
@@ -36,6 +48,17 @@ variable "public_access_cidrs" {
   description = "List of CIDR blocks that can access the Amazon EKS public API server endpoint"
   type        = list(string)
   default     = ["0.0.0.0/0"]
+}
+
+variable "authentication_mode" {
+  description = "Cluster authentication mode. Required to use aws_eks_access_entry resources"
+  type        = string
+  default     = "API_AND_CONFIG_MAP"
+
+  validation {
+    condition     = contains(["CONFIG_MAP", "API", "API_AND_CONFIG_MAP"], var.authentication_mode)
+    error_message = "authentication_mode must be one of CONFIG_MAP, API, or API_AND_CONFIG_MAP."
+  }
 }
 
 variable "enable_cluster_log_types" {

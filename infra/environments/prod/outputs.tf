@@ -17,3 +17,7 @@ output "eks_oidc_provider_arn" {
 output "eks_oidc_provider_url" {
   value = module.eks.oidc_provider_url
 }
+
+output "github_actions_role_arn" {
+  value = module.iam.github_actions_role_arn
+}
