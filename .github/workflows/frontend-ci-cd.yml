@@ -89,6 +89,7 @@ jobs:
           exit-code: '0'
 
       - name: Docker Scout CVE scan (HIGH,CRITICAL)
+        if: ${{ false }} # Temporary disable - requires Docker Scout entitlement
         uses: docker/scout-action@v1
         with:
           command: cves
