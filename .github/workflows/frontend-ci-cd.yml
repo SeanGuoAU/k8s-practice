@@ -21,7 +21,6 @@ env:
   AWS_REGION: ap-southeast-2
   ECR_REPOSITORY: k8s
   IMAGE_NAME: frontend
-  AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
 
 jobs:
   ci:
@@ -59,22 +58,28 @@ jobs:
         run: pnpm lint
 
   cd:
-    name: Build & Push to ECR
+    name: Approve, Build, Push & Deploy
     runs-on: ubuntu-latest
     needs: ci
     if: ${{ inputs.run_cd }}
-
-    outputs:
-      image: ${{ steps.set-image-output.outputs.image }}
+    environment:
+      name: frontend-cd-approval
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate AWS role secret
+        run: |
+          if [ -z "${{ secrets.AWS_ROLE_TO_ASSUME }}" ]; then
+            echo "::error::AWS_ROLE_TO_ASSUME secret is empty or not accessible to this workflow/job."
+            exit 1
+          fi
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: github-actions-frontend-cd
           aws-region: ${{ env.AWS_REGION }}
 
@@ -120,28 +125,6 @@ jobs:
           docker push $REGISTRY/$ECR_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
           docker push $REGISTRY/$ECR_REPOSITORY/$IMAGE_NAME:latest
 
-      - name: Set image output
-        id: set-image-output
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          echo "image=$REGISTRY/$ECR_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
-
-  deploy:
-    name: Deploy to EKS
-    runs-on: ubuntu-latest
-    needs: cd
-    if: ${{ inputs.run_cd }}
-
-    steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
-          role-session-name: github-actions-frontend-deploy
-          aws-region: ${{ env.AWS_REGION }}
-
       - name: Update kubeconfig
         run: |
           aws eks update-kubeconfig \
@@ -149,9 +132,12 @@ jobs:
             --name k8s
 
       - name: Roll out new image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           kubectl set image deployment/frontend \
-            frontend=${{ needs.cd.outputs.image }} \
+            frontend=$REGISTRY/$ECR_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG \
             --namespace default
           kubectl rollout status deployment/frontend \
             --namespace default \
