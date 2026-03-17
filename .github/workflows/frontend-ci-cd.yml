@@ -19,7 +19,8 @@ concurrency:
 
 env:
   AWS_REGION: ap-southeast-2
-  ECR_REPOSITORY: k8s
+  ECR_REPOSITORY: k8s-uat
+  EKS_CLUSTER_NAME: k8s-uat
   IMAGE_NAME: frontend
   AWS_ROLE_TO_ASSUME: arn:aws:iam::715227881960:role/github-actions-k8s-deploy-uat
 
@@ -167,7 +168,7 @@ jobs:
         run: |
           aws eks update-kubeconfig \
             --region $AWS_REGION \
-            --name k8s
+            --name $EKS_CLUSTER_NAME
 
       - name: Roll out new image
         env:
