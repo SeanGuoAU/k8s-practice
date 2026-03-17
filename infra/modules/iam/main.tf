@@ -13,7 +13,9 @@ data "aws_iam_policy_document" "assume_role" {
 
 locals {
   github_actions_enabled = var.github_repository != ""
-  github_subjects        = [for branch in var.github_branches : "repo:${var.github_repository}:ref:refs/heads/${branch}"]
+  github_branch_subjects = [for branch in var.github_branches : "repo:${var.github_repository}:ref:refs/heads/${branch}"]
+  github_env_subjects    = [for env in var.github_environments : "repo:${var.github_repository}:environment:${env}"]
+  github_subjects        = concat(local.github_branch_subjects, local.github_env_subjects)
 }
 
 resource "aws_iam_role" "test1_cluster" {

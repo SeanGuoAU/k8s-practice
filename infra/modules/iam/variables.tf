@@ -39,6 +39,12 @@ variable "github_branches" {
   default     = ["main"]
 }
 
+variable "github_environments" {
+  description = "GitHub Environments allowed to assume the CI role"
+  type        = list(string)
+  default     = []
+}
+
 variable "github_oidc_thumbprints" {
   description = "Thumbprints for the GitHub Actions OIDC provider"
   type        = list(string)

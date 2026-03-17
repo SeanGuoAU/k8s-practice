@@ -20,6 +20,7 @@ module "iam" {
   node_group_role_name     = var.node_group_role_name
   github_repository        = var.github_repository
   github_branches          = var.github_branches
+  github_environments      = var.github_environments
   github_actions_role_name = var.github_actions_role_name
   ecr_repository_name      = var.ecr_name
   eks_cluster_name         = var.cluster_name

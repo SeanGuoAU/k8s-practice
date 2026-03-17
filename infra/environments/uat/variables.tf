@@ -115,6 +115,12 @@ variable "github_branches" {
   default     = ["main"]
 }
 
+variable "github_environments" {
+  description = "GitHub Environments allowed to assume the CI role"
+  type        = list(string)
+  default     = []
+}
+
 variable "github_actions_role_name" {
   description = "IAM role name for GitHub Actions CI/CD"
   type        = string
