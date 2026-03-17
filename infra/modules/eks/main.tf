@@ -1,6 +1,7 @@
 locals {
   effective_cluster_subnet_ids    = var.cluster_subnet_ids != null ? var.cluster_subnet_ids : var.subnet_ids
   effective_node_group_subnet_ids = var.node_group_subnet_ids != null ? var.node_group_subnet_ids : var.subnet_ids
+  human_admin_principal_arns      = distinct(compact(concat(var.cluster_admin_principal_arns, var.cluster_admin_principal_arn != "" ? [var.cluster_admin_principal_arn] : [])))
 }
 
 resource "aws_eks_cluster" "test1" {
@@ -186,7 +187,7 @@ resource "aws_eks_addon" "ebs_csi" {
 # ------------------------------------------------------------------ #
 
 resource "aws_eks_access_entry" "github_actions" {
-  count = var.github_actions_principal_arn != "" ? 1 : 0
+  count = var.enable_github_actions_access_entry ? 1 : 0
 
   cluster_name  = aws_eks_cluster.test1.id
   principal_arn = var.github_actions_principal_arn
@@ -194,7 +195,7 @@ resource "aws_eks_access_entry" "github_actions" {
 }
 
 resource "aws_eks_access_policy_association" "github_actions_cluster_admin" {
-  count = var.github_actions_principal_arn != "" && var.grant_github_actions_cluster_admin ? 1 : 0
+  count = var.enable_github_actions_access_entry && var.grant_github_actions_cluster_admin ? 1 : 0
 
   cluster_name  = aws_eks_cluster.test1.id
   principal_arn = var.github_actions_principal_arn
@@ -208,18 +209,18 @@ resource "aws_eks_access_policy_association" "github_actions_cluster_admin" {
 }
 
 resource "aws_eks_access_entry" "human_admin" {
-  count = var.cluster_admin_principal_arn != "" ? 1 : 0
+  for_each = toset(local.human_admin_principal_arns)
 
   cluster_name  = aws_eks_cluster.test1.id
-  principal_arn = var.cluster_admin_principal_arn
+  principal_arn = each.value
   type          = "STANDARD"
 }
 
 resource "aws_eks_access_policy_association" "human_admin_cluster_admin" {
-  count = var.cluster_admin_principal_arn != "" ? 1 : 0
+  for_each = toset(local.human_admin_principal_arns)
 
   cluster_name  = aws_eks_cluster.test1.id
-  principal_arn = var.cluster_admin_principal_arn
+  principal_arn = each.value
   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
 
   access_scope {

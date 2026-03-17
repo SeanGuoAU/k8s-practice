@@ -10,3 +10,5 @@ ecr_name             = "k8s"
 cluster_role_name    = "k8s-cluster-role"
 node_group_role_name = "k8s-node-group-role"
 github_repository    = "sean/k8s-practice"
+cluster_admin_principal_arn  = ""
+cluster_admin_principal_arns = []

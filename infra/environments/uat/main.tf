@@ -42,8 +42,10 @@ module "eks" {
   subnet_ids                         = local.all_subnets
   cluster_subnet_ids                 = local.all_subnets
   node_group_subnet_ids              = module.vpc.public_subnets
+  enable_github_actions_access_entry = var.github_repository != ""
   github_actions_principal_arn       = module.iam.github_actions_role_arn
   grant_github_actions_cluster_admin = var.grant_github_actions_cluster_admin
+  cluster_admin_principal_arns       = var.cluster_admin_principal_arns
   cluster_admin_principal_arn        = var.cluster_admin_principal_arn
   tags                               = var.common_tags
 }

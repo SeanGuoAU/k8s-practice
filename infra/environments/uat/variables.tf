@@ -132,3 +132,9 @@ variable "cluster_admin_principal_arn" {
   type        = string
   default     = ""
 }
+
+variable "cluster_admin_principal_arns" {
+  description = "Optional list of IAM role/user ARNs to grant EKS cluster-admin access for human operators"
+  type        = list(string)
+  default     = []
+}

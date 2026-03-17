@@ -153,14 +153,42 @@ variable "github_actions_principal_arn" {
   default     = ""
 }
 
+variable "enable_github_actions_access_entry" {
+  description = "Whether to create EKS access entry resources for the GitHub Actions principal"
+  type        = bool
+  default     = false
+}
+
 variable "grant_github_actions_cluster_admin" {
   description = "Whether to grant the GitHub Actions role EKS cluster-admin access"
   type        = bool
   default     = true
 }
 
+variable "cluster_admin_principal_arns" {
+  description = "Optional list of IAM role/user ARNs to grant EKS cluster-admin access for human operators"
+  type        = list(string)
+  default     = []
+
+  validation {
+    condition = alltrue([
+      for arn in var.cluster_admin_principal_arns :
+      can(regex("^arn:aws:iam::[0-9]{12}:(role|user)/.+$", arn))
+    ])
+    error_message = "cluster_admin_principal_arns entries must be IAM role/user ARNs (for example arn:aws:iam::123456789012:role/AdminRole)."
+  }
+}
+
 variable "cluster_admin_principal_arn" {
-  description = "Optional IAM role/user ARN to grant EKS cluster-admin access for human operators (empty = skip)"
+  description = "Optional single IAM role/user ARN to grant EKS cluster-admin access for human operators (backward compatibility; empty = skip)"
   type        = string
   default     = ""
+
+  validation {
+    condition = (
+      var.cluster_admin_principal_arn == "" ||
+      can(regex("^arn:aws:iam::[0-9]{12}:(role|user)/.+$", var.cluster_admin_principal_arn))
+    )
+    error_message = "cluster_admin_principal_arn must be empty or an IAM role/user ARN (for example arn:aws:iam::123456789012:role/AdminRole)."
+  }
 }
