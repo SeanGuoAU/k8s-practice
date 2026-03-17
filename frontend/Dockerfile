@@ -1,5 +1,5 @@
 # -------- Build Stage --------
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 
 RUN corepack enable
@@ -14,7 +14,7 @@ COPY . .
 RUN pnpm build
 
 # -------- Runtime Stage --------
-FROM gcr.io/distroless/nodejs20-debian12:nonroot AS runtime
+FROM gcr.io/distroless/nodejs24-debian12:nonroot AS runtime
 WORKDIR /app
 
 COPY --from=builder /app/.next/standalone ./
