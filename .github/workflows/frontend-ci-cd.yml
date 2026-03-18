@@ -72,14 +72,19 @@ jobs:
             -t $IMAGE_NAME:latest \
             .
 
-      - name: Docker Scout CVE scan (HIGH,CRITICAL)
+      - name: Grype CVE scan (HIGH,CRITICAL)
         continue-on-error: true
-        uses: docker/scout-action@v1
-        with:
-          command: cves
-          image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          only-severities: critical,high
-          exit-code: false
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            anchore/grype:latest \
+            $IMAGE_NAME:$IMAGE_TAG \
+            -o table \
+            --only-fixed \
+            --by-cve \
+            --fail-on high || true
 
       - name: Build and scans complete
         run: echo "Image build and scans completed. Proceeding to push and deploy."
