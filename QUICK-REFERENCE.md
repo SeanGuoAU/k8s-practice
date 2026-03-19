@@ -50,16 +50,16 @@ terraform apply
 cd ../../..
 ```
 
-### 2. 配置阶段
-编辑 `helm/aws-load-balancer-controller/values-uat.yaml`，替换 `ACCOUNT_ID` 为实际账户 ID
+### 2. Configuration
+Edit `helm/aws-load-balancer-controller/values-uat.yaml` and replace `ACCOUNT_ID` with your real AWS account ID.
 
-### 3. 部署阶段
+### 3. Deployment
 ```bash
-./deploy-argocd.sh          # 一次性
-./deploy-alb-and-frontend.sh # 部署 ALB Controller 和前端
+./deploy-argocd.sh           # one-time setup
+./deploy-alb-and-frontend.sh # deploy ALB Controller and frontend
 ```
 
-### 4. 验证阶段
+### 4. Validation
 ```bash
 ./check-deployment.sh
 ```
@@ -105,8 +105,8 @@ kubectl describe pod -n kube-system -l app.kubernetes.io/name=aws-load-balancer-
 kubectl logs -f -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
 
 # Check:
-# - 角色 ARN 正确？
-# - 集群名称匹配？
+# - Is the role ARN correct?
+# - Does the cluster name match?
 
 # 2. Ingress Missing ALB Address?
 kubectl describe ingress frontend -n default
@@ -117,29 +117,29 @@ kubectl logs -f deployment/frontend -n default
 
 # 4. Argo CD Application Cannot Sync?
 kubectl describe application frontend-uat -n argocd
-# 检查同步状态和错误信息
+# Check sync status and error details
 ```
 
 ## Configuration Changes
 
 ### Change Frontend Hostname
-编辑 `helm/values-uat.yaml`：
+Edit `helm/values-uat.yaml`:
 ```yaml
 ingress:
   hosts:
-    - host: "your-domain.com"  # 改这里
+    - host: "your-domain.com"  # update this value
 ```
 
 ### Change Cluster Name
 1. Update Terraform: `cluster_name` in `infra/environments/uat/uat.tfvars`
-2. 运行 `terraform apply`
-3. 更新 `helm/aws-load-balancer-controller/values-uat.yaml` 中的 `clusterName`
+2. Run `terraform apply`
+3. Update `clusterName` in `helm/aws-load-balancer-controller/values-uat.yaml`
 
 ### Adjust Replica Count
 Edit `helm/aws-load-balancer-controller/values-uat.yaml`:
 ```yaml
 aws-load-balancer-controller:
-  replicaCount: 3  # 改这里
+  replicaCount: 3  # update this value
 ```
 
 ## Monitoring Metrics
@@ -168,7 +168,6 @@ git push
 
 ### Q: How to add HTTPS?
 Requires certificate configuration. Add to `helm/values-uat.yaml`:
-需要配置证书。在 `helm/values-uat.yaml` 中添加：
 ```yaml
 ingress:
   tls:
@@ -182,7 +181,6 @@ ingress:
 
 ### Q: What if ALB address changes?
 ALB address is assigned by AWS and should not change. If a fixed address is needed, create a DNS record in Route53 pointing to the ALB.
-ALB 地址由 AWS 分配，不应该改变。如果需要固定地址，应该在 Route53 中创建 DNS 记录指向 ALB。
 
 ## Next Steps
 
