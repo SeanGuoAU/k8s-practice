@@ -11,7 +11,7 @@ desired_size         = 1
 max_size             = 4
 min_size             = 1
 instance_types       = ["t3.medium"]
-ecr_name             = "k8s-uat"
+ecr_name             = "k8s-uat/frontend"
 cluster_role_name    = "k8s-uat-cluster-role"
 node_group_role_name = "k8s-uat-node-group-role"
 common_tags          = { Environment = "uat" }
@@ -19,5 +19,6 @@ github_repository    = "SeanGuoAU/k8s-practice"
 github_branches      = ["*"]
 github_environments  = ["frontend-cd-approval"]
 cluster_admin_principal_arns = [
-	"arn:aws:iam::715227881960:user/SG-test-home"
+	"arn:aws:iam::715227881960:user/SG-test-home",
+	"arn:aws:iam::715227881960:user/SG-test1"
 ]
