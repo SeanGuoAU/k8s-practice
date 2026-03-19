@@ -62,6 +62,7 @@ jobs:
         run: |
           helm upgrade --install frontend ./helm/frontend \
             --namespace default \
+            -f ./helm/frontend/values-uat.yaml \
             --set image.repository=715227881960.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPOSITORY/$IMAGE_NAME \
             --set image.tag=${{ inputs.image_tag }} \
             --wait \
