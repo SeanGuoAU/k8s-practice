@@ -155,6 +155,25 @@ data "aws_iam_policy_document" "github_actions_permissions" {
     ]
     resources = ["arn:aws:eks:*:*:cluster/${var.eks_cluster_name}"]
   }
+
+  statement {
+    sid    = "AllowEksUpdateKubeconfig"
+    effect = "Allow"
+    actions = [
+      "eks:DescribeCluster",
+      "eks:ListClusters"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AllowKubectlManageDeployments"
+    effect = "Allow"
+    actions = [
+      "eks:AccessKubernetesApi"
+    ]
+    resources = ["arn:aws:eks:*:*:cluster/${var.eks_cluster_name}"]
+  }
 }
 
 resource "aws_iam_policy" "github_actions_permissions" {
