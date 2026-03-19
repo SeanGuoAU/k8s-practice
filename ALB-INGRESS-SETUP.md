@@ -1,133 +1,133 @@
-# ALB 与 Ingress 配置指南
+# AWS Load Balancer Controller and Ingress Configuration Guide
 
-本文档说明如何配置并部署 AWS Load Balancer Controller 和前端 Ingress。
+This document explains how to deploy the AWS Load Balancer Controller and configure frontend Ingress.
 
-## 完整部署流程
+## Complete Deployment Process
 
-### 第一步：创建基础设施（Terraform）
+### Step 1: Create Infrastructure (Terraform)
 
-首先确保 EKS 集群已通过 Terraform 部署并且 ALB Controller IAM 角色已创建：
+First, ensure the EKS cluster is deployed via Terraform and the ALB Controller IAM role is created:
 
 ```bash
 cd infra/environments/uat
 
-# 如果还没有初始化
+# Initialize if not already done
 terraform init
 
-# 查看即将应用的变更
+# Review planned changes
 terraform plan
 
-# 应用配置
+# Apply configuration
 terraform apply
 
-# 获取 ALB Controller 角色 ARN（重要！）
+# Get ALB Controller role ARN (IMPORTANT!)
 terraform output alb_controller_role_arn
 ```
 
-**保存输出的 ALB Controller 角色 ARN**，下一步需要使用。
+**Save the ALB Controller role ARN output**, as you'll need it in the next step.
 
-### 第二步：更新 ALB Controller Helm Values
+### Step 2: Update ALB Controller Helm Values
 
-使用第一步获得的 ARN 更新 ALB Controller 配置：
+Use the ARN from Step 1 to update the ALB Controller configuration:
 
 ```bash
-# 编辑文件
+# Edit the file
 vim helm/aws-load-balancer-controller/values-uat.yaml
 ```
 
-找到这一行并替换为实际的 ARN：
+Find this line and replace it with the actual ARN:
 
 ```yaml
 eks.amazonaws.com/role-arn: "arn:aws:iam::YOUR_ACCOUNT_ID:role/k8s-practice-uat-alb-controller"
 ```
 
-例如：
+Example:
 ```yaml
 eks.amazonaws.com/role-arn: "arn:aws:iam::123456789012:role/k8s-practice-uat-alb-controller"
 ```
 
-### 第三步：部署 Argo CD
+### Step 3: Deploy Argo CD
 
-如果还没有部署 Argo CD，请运行：
+If Argo CD hasn't been deployed yet, run:
 
 ```bash
 chmod +x deploy-argocd.sh
 ./deploy-argocd.sh
 
-# 获取初始密码
+# Get initial password
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
 ```
 
-### 第四步：部署 ALB Controller 和前端
+### Step 4: Deploy ALB Controller and Frontend
 
-运行部署脚本自动部署所有必要组件：
+Run the deployment script to automatically deploy all necessary components:
 
 ```bash
 chmod +x deploy-alb-and-frontend.sh
 ./deploy-alb-and-frontend.sh
 ```
 
-这个脚本会：
-1. 创建 AWS Load Balancer Controller Application
-2. 创建 Frontend Application
-3. 等待部署完成
-4. 显示前端访问 URL
+This script will:
+1. Create AWS Load Balancer Controller Application
+2. Create Frontend Application  
+3. Wait for deployment to complete
+4. Display frontend access URL
 
-### 第五步（可选）：手动部署
+### Step 5 (Optional): Manual Deployment
 
-如果更喜欢手动部署，可以逐步执行：
+If you prefer manual deployment, execute steps sequentially:
 
 ```bash
-# 部署 ALB Controller
+# Deploy ALB Controller
 kubectl apply -f k8s/aws-load-balancer-controller-uat-app.yaml
 
-# 等待 ALB Controller 就绪
+# Wait for ALB Controller to be ready
 kubectl rollout status deployment/aws-load-balancer-controller -n kube-system --timeout=5m
 
-# 部署前端
+# Deploy frontend
 kubectl apply -f k8s/frontend-uat-app.yaml
 
-# 等待前端就绪
+# Wait for frontend to be ready
 kubectl rollout status deployment/frontend -n default --timeout=5m
 
-# 获取 Ingress ALB 地址（等待 2-3 分钟）
+# Get Ingress ALB address (wait 2-3 minutes)
 kubectl get ingress -n default
 ```
 
-## 验证部署
+## Verify Deployment
 
 ```bash
-# 运行检查脚本
+# Run the check script
 chmod +x check-deployment.sh
 ./check-deployment.sh
 ```
 
-或者手动检查：
+Or check manually:
 
 ```bash
-# 检查 ALB Controller 
+# Check ALB Controller
 kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
 
-# 检查前端 pods
+# Check frontend pods
 kubectl get pods -n default -l app=frontend
 
-# 检查 Ingress
+# Check Ingress
 kubectl get ingress -n default
 
-# 获取 ALB 地址
+# Get ALB address
 kubectl get ingress frontend -n default -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 
-# 检查 Argo CD Applications
+# Check Argo CD Applications
 kubectl get applications -n argocd
 ```
 
-## 故障排除
+## Troubleshooting
 
-### ALB Controller Pod 无法启动
+### ALB Controller Pod Unable to Start
 
-**问题**：ALB Controller pods 一直处于 CrashLoopBackOff 或 Pending
+**Issue**: ALB Controller pods remain in CrashLoopBackOff or Pending state
 
-**检查步骤**：
+**Troubleshooting steps**:
 
 ```bash
 # 查看 pod 事件
@@ -137,19 +137,19 @@ kubectl describe pod -n kube-system -l app.kubernetes.io/name=aws-load-balancer-
 kubectl logs -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
 
 # 常见原因：
-# 1. 角色 ARN 不正确 - 检查 values-uat.yaml
-# 2. IAM 权限不足 - 检查 infra/environments/uat/main.tf 中的权限策略
+# 1. Incorrect role ARN - Check values-uat.yaml
+# 2. Insufficient IAM permissions - Check infra/environments/uat/main.tf permissions policy
 # 3. 集群名称不匹配 - clusterName 必须与 Terraform 中的集群名一致
 ```
 
-### Ingress 无法获得 ALB 地址
+### Ingress Unable to Get ALB Address
 
-**问题**：`kubectl get ingress` 显示 HOSTNAME/ADDRESS 为空
+**Issue**: `kubectl get ingress` shows empty HOSTNAME/ADDRESS
 
-**等待时间**：ALB 创建通常需要 2-3 分钟
+**Wait time**: ALB creation typically takes 2-3 minutes
 
 ```bash
-# 持续检查
+# Watch continuously
 kubectl get ingress -n default -w
 
 # 查看详细信息
@@ -159,59 +159,59 @@ kubectl describe ingress frontend -n default
 kubectl get events -n default --sort-by='.lastTimestamp'
 ```
 
-### ALB Controller 权限错误
+### ALB Controller Permission Errors
 
-**错误日志中出现**：`Failed to create load balancer`, `Access Denied` 等
+**Error in logs**: `Failed to create load balancer`, `Access Denied`, etc.
 
-**排查**：
+**Troubleshooting**:
 
 ```bash
 # 1. 确认 role ARN 正确
 kubectl get sa aws-load-balancer-controller -n kube-system -o jsonpath='{.metadata.annotations.eks\.amazonaws\.com/role-arn}'
 
-# 2. 在 AWS 检查角色策略
+# 2. Check role policies in AWS
 aws iam list-attached-role-policies --role-name k8s-practice-uat-alb-controller
 
 # 3. 查看详细的 IAM 策略
 aws iam get-role-policy --role-name k8s-practice-uat-alb-controller --policy-name aws-load-balancer-controller-policy
 ```
 
-## 重要配置文件
+## Important Configuration Files
 
-| 文件 | 说明 |
+| File | Purpose |
 |------|------|
-| `infra/environments/uat/main.tf` | 创建 ALB Controller IAM 角色和权限 |
-| `helm/aws-load-balancer-controller/Chart.yaml` | ALB Controller Helm Chart 定义 |
-| `helm/aws-load-balancer-controller/values-uat.yaml` | ALB Controller UAT 配置（需要更新 ARN") |
-| `helm/values-uat.yaml` | 前端 Ingress 配置 |
-| `k8s/aws-load-balancer-controller-uat-app.yaml` | Argo CD Application 定义 |
-| `k8s/frontend-uat-app.yaml` | 前端 Argo CD Application 定义 |
+| `infra/environments/uat/main.tf` | Create ALB Controller IAM role and permissions |
+| `helm/aws-load-balancer-controller/Chart.yaml` | ALB Controller Helm Chart definition |
+| `helm/aws-load-balancer-controller/values-uat.yaml` | ALB Controller UAT configuration (ARN update needed) |
+| `helm/values-uat.yaml` | Frontend Ingress configuration |
+| `k8s/aws-load-balancer-controller-uat-app.yaml` | Argo CD Application definition |
+| `k8s/frontend-uat-app.yaml` | Frontend Argo CD Application definition |
 
-## 访问前端
+## Access Frontend
 
-部署完成后，使用以下方式访问前端：
+After deployment, use the following to access the frontend:
 
 ```bash
-# 获取 ALB 地址
+# Get ALB address
 ALB_ADDRESS=$(kubectl get ingress frontend -n default -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 echo "Frontend URL: http://$ALB_ADDRESS"
 ```
 
-### 配置 DNS 或本地 hosts
+### Configure DNS or Local Hosts
 
-**选项 1：使用 Route53（推荐）**
-- 在 Route53 中创建 A 记录指向 ALB 地址
+**Option 1: Use Route53 (Recommended)**
+- Create an A record in Route53 pointing to the ALB address
 
-**选项 2：编辑本地 /etc/hosts**
+**Option 2: Edit local /etc/hosts**
 ```bash
-# 在 /etc/hosts 添加
+# Add to /etc/hosts
 <ALB_ADDRESS> frontend-uat.example.com
 ```
 
-会根据 `helm/values-uat.yaml` 中配置的主机名进行路由。
+Routing will be based on the hostname configured in `helm/values-uat.yaml`.
 
-## 下一步
+## Next Steps
 
-- [GitOps-Guide.md](GitOps-Guide.md) - 了解 CI/CD 流程
-- [README.md](README.md) - 整体项目说明
-- [helm/aws-load-balancer-controller/README.md](helm/aws-load-balancer-controller/README.md) - ALB Controller 详细文档
+- [GitOps-Guide.md](GitOps-Guide.md) - Learn about the CI/CD process
+- [README.md](README.md) - Overall project documentation
+- [helm/aws-load-balancer-controller/README.md](helm/aws-load-balancer-controller/README.md) - Detailed ALB Controller documentation
