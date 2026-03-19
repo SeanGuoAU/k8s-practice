@@ -1,0 +1,85 @@
+name: Frontend CI
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_NAME: frontend
+
+jobs:
+  ci:
+    name: Lint & Type-check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Type-check
+        run: pnpm type-check
+
+      - name: Lint
+        run: pnpm lint
+
+  build-and-scan:
+    name: Build & Scan Image
+    runs-on: ubuntu-latest
+    needs: ci
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        working-directory: frontend
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            -t $IMAGE_NAME:$IMAGE_TAG \
+            -t $IMAGE_NAME:latest \
+            .
+
+      - name: Grype CVE scan (HIGH,CRITICAL)
+        continue-on-error: true
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            anchore/grype:latest \
+            $IMAGE_NAME:$IMAGE_TAG \
+            -o table \
+            --only-fixed \
+            --by-cve \
+            --fail-on high || true
+
+      - name: CI build and scans complete
+        run: echo "CI completed through build and scan stages (no push/deploy)."

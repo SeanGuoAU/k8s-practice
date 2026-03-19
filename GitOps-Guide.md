@@ -130,7 +130,7 @@ kubectl get deployment frontend -n default -o yaml | grep image
 | `deploy-argocd.sh` | One-time Argo CD deployment script |
 | `k8s/frontend-uat-app.yaml` | Argo CD Application for frontend |
 | `k8s/aws-load-balancer-controller-uat-app.yaml` | Argo CD Application for ALB Controller |
-| `.github/workflows/frontend-ci-cd.yml` | CI pipeline + auto sync-config job |
+| `.github/workflows/frontend-ci.yml` | CI pipeline + auto sync-config job |
 | `helm/frontend/values-uat.yaml` | Frontend UAT environment values (auto-updated by CI) |
 | `helm/aws-load-balancer-controller/values-uat.yaml` | ALB Controller configuration |
 | `infra/environments/uat/main.tf` | Terraform to create ALB Controller IAM role |
