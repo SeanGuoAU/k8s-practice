@@ -4,15 +4,15 @@ import eslint from "@eslint/js";
 import globals from "globals";
 import tseslint, { parser } from "typescript-eslint";
 import prettier from "eslint-plugin-prettier";
-import importSort from "eslint-plugin-simple-import-sort";   // ← 新增
+import importSort from "eslint-plugin-simple-import-sort";   // added
 
 export default tseslint.config(
-  /* 基础推荐 + type‑aware 推荐 */
+  /* Base recommended + type-aware recommended rules */
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
 
-  /* ---------- 主代码块 ---------- */
+  /* ---------- Main source block ---------- */
   {
     files: ["src/**/*.ts"],
     languageOptions: {
@@ -30,12 +30,12 @@ export default tseslint.config(
       "simple-import-sort": importSort,
     },
     rules: {
-      /* 代码风格 / 质量 */
+      /* Style / quality */
       "prettier/prettier": "error",
       "no-console": "warn",
       "no-debugger": "error",
 
-      /* TypeScript 规则（保持不变） */
+      /* TypeScript rules (unchanged) */
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/explicit-function-return-type": "warn",
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
@@ -51,7 +51,7 @@ export default tseslint.config(
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
 
-      /* --- 新增导入排序规则 --- */
+      /* --- Import sorting rules --- */
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
     },
@@ -59,13 +59,13 @@ export default tseslint.config(
 
 
 
-  /* 关闭 Nest 模块空壳类误报 */
+  /* Disable false positives for empty Nest module classes */
   {
     files: ["src/**/*.module.ts"],
     rules: { "@typescript-eslint/no-extraneous-class": "off" },
   },
 
-  /* ---------- 测试文件块 ---------- */
+  /* ---------- Test files block ---------- */
   {
     files: ["test/**/*.ts"],
     languageOptions: {
@@ -80,12 +80,12 @@ export default tseslint.config(
     },
     plugins: { prettier, "simple-import-sort": importSort },
     rules: {
-      /* 代码风格 / 质量 */
+      /* Style / quality */
       "prettier/prettier": "error",
       "no-console": "off", // Allow console in tests
       "no-debugger": "error",
 
-      /* TypeScript 规则（宽松版本） */
+      /* TypeScript rules (relaxed) */
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
@@ -153,7 +153,7 @@ export default tseslint.config(
       "@darraghor/nestjs-typed/api-enum-property-best-practices": "off",
       "@darraghor/nestjs-typed/api-property-matches-property-optionality": "off",
 
-      /* --- 导入排序规则 --- */
+      /* --- Import sorting rules --- */
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
     },

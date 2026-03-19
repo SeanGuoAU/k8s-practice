@@ -5,7 +5,7 @@ import { randomUUID } from 'crypto';
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/dispatchai';
 const SALT_ROUNDS = 10;
 
-// 定义接口
+// Define interfaces
 interface User {
   firstName: string;
   lastName: string;
@@ -48,12 +48,12 @@ interface Company {
     state: string;
     postcode: string;
   };
-  user: Types.ObjectId;  // 改为 ObjectId 类型
+  user: Types.ObjectId;  // Use ObjectId type
   createdAt: Date;
   updatedAt: Date;
 }
 
-// 创建 Schema
+// Create schemas
 const userSchema = new Schema({
   firstName: String,
   lastName: String,
@@ -100,18 +100,18 @@ async function seedTelephonyTestData() {
     await connect(MONGODB_URI);
     console.log('✅ Connected to MongoDB');
     
-    // 创建 models
+    // Create models
     const UserModel = model('User', userSchema);
     const ServiceModel = model('Service', serviceSchema);
     const CompanyModel = model('Company', companySchema);
     
-    // 检查是否已存在测试用户
+    // Check whether the test user already exists
     const existingUser = await UserModel.findOne({ email: 'john.doe@example.com' });
     
     if (existingUser) {
       console.log('👤 Test user already exists, updating...');
       
-      // 更新用户信息
+      // Update user info
       const hashedPassword = await bcrypt.hash('Admin123!', SALT_ROUNDS);
       await UserModel.updateOne(
         { email: 'john.doe@example.com' },
@@ -133,9 +133,9 @@ async function seedTelephonyTestData() {
         }
       );
       
-      // 删除该用户的现有服务和公司数据
+      // Remove existing services and company data for this user
       await ServiceModel.deleteMany({ userId: existingUser._id.toString() });
-      await CompanyModel.deleteMany({ user: existingUser._id });  // 使用 ObjectId
+      await CompanyModel.deleteMany({ user: existingUser._id });  // Use ObjectId
       console.log('🧹 Cleared existing services and company data for test user');
       
       const testUser = existingUser;
@@ -143,7 +143,7 @@ async function seedTelephonyTestData() {
     } else {
       console.log('👤 Creating new test user...');
       
-      // 创建测试用户
+      // Create test user
       const hashedPassword = await bcrypt.hash('Admin123!', SALT_ROUNDS);
       const testUser = await UserModel.create({
         firstName: 'John',
@@ -166,14 +166,14 @@ async function seedTelephonyTestData() {
       console.log('👤 Created test user:', testUser.email);
     }
     
-    // 获取或创建用户（确保我们有正确的用户ID）
+    // Get or create user (ensure we have the correct user ID)
     const testUser = await UserModel.findOne({ email: 'john.doe@example.com' });
     
     if (!testUser) {
       throw new Error('Failed to create or find test user');
     }
     
-    // 创建公司信息
+    // Create company info
     const testCompany = await CompanyModel.findOneAndUpdate(
       { user: testUser._id },
       {
@@ -194,7 +194,7 @@ async function seedTelephonyTestData() {
     
     console.log('🏢 Created test company:', testCompany.businessName);
     
-    // 创建服务列表
+    // Create service list
     const services = [
       {
         name: 'House Cleaning',
@@ -236,9 +236,9 @@ async function seedTelephonyTestData() {
     const createdServices = await ServiceModel.insertMany(services);
     console.log('🔧 Created services:', createdServices.map(s => s.name));
     
-    // 创建 Redis 测试数据（模拟 CallSkeleton）
+    // Create Redis test data (simulating CallSkeleton)
     console.log('\n📞 Redis Test Data Structure:');
-    console.log('CallSkeleton 示例:');
+    console.log('CallSkeleton example:');
     console.log(JSON.stringify({
       callSid: 'CA' + randomUUID().replace(/-/g, '').substring(0, 32),
       services: createdServices.map(s => ({
@@ -285,7 +285,7 @@ async function seedTelephonyTestData() {
   }
 }
 
-// 如果直接运行此文件
+// Run when this file is executed directly
 if (require.main === module) {
   seedTelephonyTestData();
 }

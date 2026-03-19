@@ -22,7 +22,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'   # 或 3.12
+          python-version: '3.11'   # or 3.12
 
       - name: Install uv
         run: pipx install uv

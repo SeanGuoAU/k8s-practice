@@ -3,14 +3,14 @@ import aiosmtplib
 import email.utils
 from email.message import EmailMessage
 
-# 统一读环境变量，并设默认值
+# Read environment variables with sensible defaults.
 SES_FROM = os.getenv("SES_FROM", "no-reply@dispatchai.com")
 SMTP_HOST = os.getenv("SMTP_HOST")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER = os.getenv("SMTP_USER")
 SMTP_PASS = os.getenv("SMTP_PASS")
 
-# 只开启一种 TLS：587 -> STARTTLS；465 -> SSL/TLS
+# Enable only one TLS mode: 587 -> STARTTLS, 465 -> SSL/TLS.
 STARTTLS_ENABLED = SMTP_PORT == 587
 USE_TLS_ENABLED = SMTP_PORT == 465
 

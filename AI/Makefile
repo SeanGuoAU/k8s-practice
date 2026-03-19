@@ -3,29 +3,29 @@ SHELL := /bin/bash
 .ONESHELL:
 .DEFAULT_GOAL := help
 
-# 可在 CI 里覆盖：make test PYTHON=3.12
+# Can be overridden in CI: make test PYTHON=3.12
 PYTHON ?= python3
 CODE ?= .
-TEST_DIR ?= tests            # 如果你确实放在 app/test，就写 TEST_DIR=app/test
+TEST_DIR ?= tests            # If tests are under app/test, use TEST_DIR=app/test
 MYPY_TARGET ?= $(CODE)/app
 PYTEST_OPTS ?= -q --maxfail=1 --disable-warnings
-COV ?= 1                    # 设为 0 关闭覆盖率
+COV ?= 1                    # Set to 0 to disable coverage
 COV_OPTS := $(if $(filter $(COV),1),--cov=$(CODE) --cov-report=xml,)
 
 # ---- Phonies ----
 .PHONY: help sync lint lint-fix format test typecheck check-all
 
 help:
-	@echo "make sync        安装/同步依赖（uv sync）"
-	@echo "make lint        Ruff 代码检查"
-	@echo "make lint-fix    Ruff 自动修复"
-	@echo "make format      Ruff 格式化"
-	@echo "make typecheck   MyPy 类型检查"
-	@echo "make test        Pytest 测试（含覆盖率，CI 默认开启）"
+	@echo "make sync        Install/sync dependencies (uv sync)"
+	@echo "make lint        Ruff lint checks"
+	@echo "make lint-fix    Ruff auto-fix"
+	@echo "make format      Ruff formatting"
+	@echo "make typecheck   MyPy type checking"
+	@echo "make test        Pytest (with coverage, enabled by default in CI)"
 	@echo "make check-all   lint + typecheck + test"
 
 sync:
-	uv sync --frozen || uv sync   # 有 uv.lock 就严格锁定；没有则创建
+	uv sync --frozen || uv sync   # Use strict lock when uv.lock exists; create one otherwise
 
 lint:
 	uv run ruff check $(CODE)

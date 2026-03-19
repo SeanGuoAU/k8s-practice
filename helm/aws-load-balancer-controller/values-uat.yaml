@@ -10,7 +10,7 @@ aws-load-balancer-controller:
     # IMPORTANT: Update this with the actual role ARN from Terraform output
     # Run: cd infra/environments/uat && terraform output alb_controller_role_arn
     annotations:
-      eks.amazonaws.com/role-arn: "arn:aws:iam::ACCOUNT_ID:role/k8s-practice-uat-alb-controller"
+      eks.amazonaws.com/role-arn: "arn:aws:iam::715227881960:role/k8s-practice-uat-alb-controller"
   
   replicaCount: 2
   

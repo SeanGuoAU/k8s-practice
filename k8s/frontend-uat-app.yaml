@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://github.com/SeanGuoAU/k8s-practice.git
     targetRevision: main
-    path: helm/frontend
+    path: helm
     helm:
       valueFiles:
         - values.yaml

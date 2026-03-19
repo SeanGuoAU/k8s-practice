@@ -55,7 +55,7 @@ export default function GreetingSection() {
   }
 
   if (error) {
-    // 检查是否是 404 错误（User not found）
+    // Check whether this is a 404 error (User not found).
     const errorMessage =
       typeof error === 'string'
         ? error

@@ -8,7 +8,7 @@ from ics import Calendar, Event, DisplayAlarm
 
 def _rrule_to_str(rrule: Mapping[str, object]) -> str:
     """
-    把 {"freq":"WEEKLY","interval":1,"byday":["MO","WE"]} 转成
+    Convert {"freq":"WEEKLY","interval":1,"byday":["MO","WE"]} into
     "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE"
     """
     parts = []
@@ -61,7 +61,7 @@ def build_ics_request(
         ev.extra.append(("RRULE", _rrule_to_str(rrule)))
 
     if alarm_minutes_before is not None:
-        # ⚠️ 这里改成 timedelta，不能再用 int
+        # Use timedelta here; a raw int is not accepted.
         ev.alarms.append(
             DisplayAlarm(trigger=timedelta(minutes=-int(alarm_minutes_before)))
         )

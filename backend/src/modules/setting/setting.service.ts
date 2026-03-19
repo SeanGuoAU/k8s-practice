@@ -308,7 +308,7 @@ export class SettingService {
       );
     }
 
-    // 先查找是否存在company记录
+    // First check whether a company record exists
     const existingCompany = await this.companyModel
       .findOne({ user: userId })
       .exec();
@@ -326,7 +326,7 @@ export class SettingService {
       return await newCompany.save();
     }
 
-    // 更新existing company记录
+    // Update existing company record
     const updatedCompany = await this.companyModel.findOneAndUpdate(
       { user: userId },
       {

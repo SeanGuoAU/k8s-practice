@@ -24,7 +24,7 @@ async def redis():
 @router.get("/mcp_ping")
 async def mcp_ping(
     show_tools: bool = Query(False),
-    plain: bool = Query(False, description="是否用纯文本按行返回"),
+    plain: bool = Query(False, description="Return line-by-line output as plain text"),
 ):
     try:
         raw = await call_tool("health_ping", {})

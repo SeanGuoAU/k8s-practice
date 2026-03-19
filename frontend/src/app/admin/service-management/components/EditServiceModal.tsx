@@ -233,13 +233,13 @@ export default function EditServiceModal({
   const [updateService, { isLoading: isUpdating }] = useUpdateServiceMutation();
   const [saveServiceFormFields] = useSaveServiceFormFieldsMutation();
 
-  // 获取现有的表单字段
+  // Fetch existing form fields.
   const { data: existingFormFields = [] } = useGetServiceFormFieldsQuery(
     { serviceId: service?._id ?? '' },
     { skip: !service?._id },
   );
 
-  // 转换后端字段格式到前端格式
+  // Convert backend field format to frontend format.
   const convertedFields = useMemo(() => {
     if (!existingFormFields || existingFormFields.length === 0) {
       return [];
@@ -253,7 +253,7 @@ export default function EditServiceModal({
     }));
   }, [existingFormFields]);
 
-  // 当现有字段变化时，更新本地状态
+  // Update local state when existing fields change.
   useEffect(() => {
     const currentFieldsString = JSON.stringify(customFormFields);
     const newFieldsString = JSON.stringify(convertedFields);
@@ -349,9 +349,9 @@ export default function EditServiceModal({
         currentServiceId = newService._id;
       }
 
-      // 保存表单字段
+      // Save form fields.
       if (currentServiceId && customFormFields.length > 0) {
-        // 过滤掉空的字段（label为空的字段）
+        // Filter out empty fields (fields with empty label).
         const validFields = customFormFields.filter(
           field => field.label.trim() !== '',
         );
@@ -376,7 +376,7 @@ export default function EditServiceModal({
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to save service:', error);
-      // 提供更详细的错误信息
+      // Provide more detailed error information.
       if (error && typeof error === 'object' && 'data' in error) {
         // eslint-disable-next-line no-console
         console.error('Error details:', error.data);
@@ -397,9 +397,9 @@ export default function EditServiceModal({
     try {
       setCustomFormFields(fields);
 
-      // 如果服务已存在，立即保存到后端
+      // If the service already exists, save to backend immediately.
       if (service?._id) {
-        // 过滤掉空的字段（label为空的字段）
+        // Filter out empty fields (fields with empty label).
         const validFields = fields.filter(field => field.label.trim() !== '');
 
         if (validFields.length > 0) {
@@ -427,7 +427,7 @@ export default function EditServiceModal({
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Failed to save custom form fields:', error);
-      // 提供更详细的错误信息
+      // Provide more detailed error information.
       if (error && typeof error === 'object' && 'data' in error) {
         // eslint-disable-next-line no-console
         console.error('Error details:', error.data);

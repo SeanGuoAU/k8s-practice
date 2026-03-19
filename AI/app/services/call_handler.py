@@ -1150,9 +1150,9 @@ async def main() -> None:
     state.update(
         {
             "available_services": [
-                {"id": "cleaning", "name": "房屋清洁", "price": 100.0},
-                {"id": "repair", "name": "维修服务", "price": 200.0},
-                {"id": "garden", "name": "园艺服务", "price": 150.0},
+                {"id": "cleaning", "name": "House Cleaning", "price": 100.0},
+                {"id": "repair", "name": "Repair Service", "price": 200.0},
+                {"id": "garden", "name": "Garden Service", "price": 150.0},
             ]
         }
     )
@@ -1197,11 +1197,11 @@ async def main() -> None:
             if state.get("conversation_complete"):
                 print("\n🎉 Information collection completed!")
                 print("📋 Final collected information:")
-                print(f"- 姓名: {state.get('name', 'Not collected')}")
-                print(f"- 电话: {state.get('phone', 'Not collected')}")
-                print(f"- 地址: {state.get('address', 'Not collected')}")
-                print(f"- 服务: {state.get('service', 'Not collected')}")
-                print(f"- 服务时间: {state.get('service_time', 'Not collected')}")
+                print(f"- Name: {state.get('name', 'Not collected')}")
+                print(f"- Phone: {state.get('phone', 'Not collected')}")
+                print(f"- Address: {state.get('address', 'Not collected')}")
+                print(f"- Service: {state.get('service', 'Not collected')}")
+                print(f"- Service Time: {state.get('service_time', 'Not collected')}")
                 break
 
         except KeyboardInterrupt:

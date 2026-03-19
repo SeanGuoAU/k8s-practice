@@ -277,7 +277,7 @@ export default function ManualSetup({
       pt={0}
       sx={{
         width: '100%',
-        px: { xs: 1, sm: 2, md: 0 }, // xs: 8px, sm: 16px, md及以上无padding
+        px: { xs: 1, sm: 2, md: 0 }, // xs: 8px, sm: 16px, no padding at md and above
       }}
     >
       <Title>Manual setup</Title>

@@ -12,20 +12,20 @@ const PageWrapper = styled(Box)({
 });
 
 const GradientNavbar = styled(Navbar)({
-  /* 1️⃣ 清空自身及后代的背景色（行内样式也被 !important 覆盖） */
+  /* 1️⃣ Clear background colors on itself and descendants (including inline styles via !important). */
   '& .MuiAppBar-root, & .MuiAppBar-root *': {
     backgroundColor: 'transparent !important',
   },
 
-  /* 2️⃣ 用 before 伪元素放渐变，置于最底层 */
+  /* 2️⃣ Render a gradient using ::before at the bottom layer. */
   '& .MuiAppBar-root': {
-    position: 'relative', // 让 ::before 绝对定位参照
+    position: 'relative', // Reference for absolute positioning of ::before
     boxShadow: 'none',
     '&::before': {
       content: '""',
       position: 'absolute',
       inset: 0,
-      zIndex: -1, // 在所有内容下方
+      zIndex: -1, // Below all content
       background: 'linear-gradient(180deg,#f8fff3 0%,#ffffff 100%)',
     },
   },

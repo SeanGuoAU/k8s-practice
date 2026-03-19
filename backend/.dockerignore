@@ -1,12 +1,12 @@
-# ───────── 会拖慢上下文传输的目录 ─────────
+# ───────── Directories that slow context transfer ─────────
 node_modules
 **/.pnpm
 .git
-# Mac/Windows 垃圾
+# Mac/Windows junk files
 .DS_Store
 Thumbs.db
 
-# ───────── 只在本地用得到的文件 ─────────
+# ───────── Local-only files ─────────
 *.log
 .env*
 .cache

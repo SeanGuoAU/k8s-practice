@@ -17,30 +17,30 @@ router = APIRouter(
 
 
 class BaseMailArgs(BaseModel):
-    to: str = Field(..., description="收件人邮箱")
-    subject: str = Field(..., description="邮件主题")
-    body: str = Field(..., description="纯文本正文")
+    to: str = Field(..., description="Recipient email")
+    subject: str = Field(..., description="Email subject")
+    body: str = Field(..., description="Plain text body")
 
 
 class EventInfo(BaseModel):
-    uid: Optional[str] = Field(None, description="事件 UID；不传时自动生成")
-    summary: str = Field(..., description="事件标题")
-    start: datetime = Field(..., description="开始时间，ISO8601")
-    end: datetime = Field(..., description="结束时间，ISO8601")
-    description: Optional[str] = Field(None, description="事件描述")
-    location: Optional[str] = Field(None, description="事件地点")
-    organizer_name: str = Field("DispatchAI", description="发起人姓名")
-    organizer_email: str = Field("no-reply@dispatchai.com", description="发起人邮箱")
-    attendees: List[str] = Field(default_factory=list, description="参与人邮箱列表")
-    sequence: int = Field(0, description="更新序号，更新/取消时＋1")
+    uid: Optional[str] = Field(None, description="Event UID; auto-generated when omitted")
+    summary: str = Field(..., description="Event title")
+    start: datetime = Field(..., description="Start time, ISO8601")
+    end: datetime = Field(..., description="End time, ISO8601")
+    description: Optional[str] = Field(None, description="Event description")
+    location: Optional[str] = Field(None, description="Event location")
+    organizer_name: str = Field("DispatchAI", description="Organizer name")
+    organizer_email: str = Field("no-reply@dispatchai.com", description="Organizer email")
+    attendees: List[str] = Field(default_factory=list, description="Participant email list")
+    sequence: int = Field(0, description="Update sequence number, increment on update/cancel")
     rrule: Optional[Dict[str, Any]] = Field(
         None,
-        description='重复规则，如 {"freq":"DAILY","count":5} 或 {"freq":"WEEKLY","interval":1}',
+        description='Recurrence rule, for example {"freq":"DAILY","count":5} or {"freq":"WEEKLY","interval":1}',
     )
-    alarm_minutes_before: Optional[int] = Field(None, description="会前多少分钟提醒")
-    cancel: bool = Field(False, description="是否取消 (CANCEL)")
+    alarm_minutes_before: Optional[int] = Field(None, description="Reminder minutes before event")
+    cancel: bool = Field(False, description="Whether to cancel (CANCEL)")
     timezone: str = Field(
-        "Australia/Sydney", description="事件时区（IANA 名称），默认悉尼市区"
+        "Australia/Sydney", description="Event timezone (IANA name), defaults to Sydney"
     )
 
 
@@ -135,7 +135,7 @@ async def send_email_with_ics_api(args: SendICSArgs):
 
 class SendGoogleCalArgs(BaseMailArgs, EventInfo):
     access_token: str = Field(..., description="Google OAuth Access Token")
-    calendar_id: str = Field(..., description="目标日历 ID")
+    calendar_id: str = Field(..., description="Target calendar ID")
 
 
 @router.post(
@@ -145,9 +145,9 @@ class SendGoogleCalArgs(BaseMailArgs, EventInfo):
 )
 async def send_email_with_google_calendar(args: SendGoogleCalArgs):
     """
-    TODO: 用 HTTP 客户端调用 Google Calendar API，示例在文档中提供。
+    TODO: Call Google Calendar API via an HTTP client. Example implementation is provided in docs.
     """
-    # 暂时返回接收到的参数，后续实现逻辑时再替换
+    # Temporarily return received parameters until implementation is completed.
     return {
         "status": "pending",
         "tool": "google_calendar",
@@ -157,7 +157,7 @@ async def send_email_with_google_calendar(args: SendGoogleCalArgs):
 
 class SendOutlookCalArgs(BaseMailArgs, EventInfo):
     access_token: str = Field(..., description="Outlook OAuth Access Token")
-    calendar_id: str = Field(..., description="目标日历 ID")
+    calendar_id: str = Field(..., description="Target calendar ID")
 
 
 @router.post(
@@ -167,7 +167,7 @@ class SendOutlookCalArgs(BaseMailArgs, EventInfo):
 )
 async def send_email_with_outlook_calendar(args: SendOutlookCalArgs):
     """
-    TODO: 用 HTTP 客户端调用 Microsoft Graph API，示例在文档中提供。
+    TODO: Call Microsoft Graph API via an HTTP client. Example implementation is provided in docs.
     """
     return {
         "status": "pending",

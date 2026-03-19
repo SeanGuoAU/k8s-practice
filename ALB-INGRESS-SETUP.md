@@ -130,16 +130,16 @@ kubectl get applications -n argocd
 **Troubleshooting steps**:
 
 ```bash
-# 查看 pod 事件
+# View pod events
 kubectl describe pod -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
 
-# 查看日志
+# View logs
 kubectl logs -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controller
 
-# 常见原因：
+# Common causes:
 # 1. Incorrect role ARN - Check values-uat.yaml
 # 2. Insufficient IAM permissions - Check infra/environments/uat/main.tf permissions policy
-# 3. 集群名称不匹配 - clusterName 必须与 Terraform 中的集群名一致
+# 3. Cluster name mismatch - clusterName must match the Terraform cluster name
 ```
 
 ### Ingress Unable to Get ALB Address
@@ -152,10 +152,10 @@ kubectl logs -n kube-system -l app.kubernetes.io/name=aws-load-balancer-controll
 # Watch continuously
 kubectl get ingress -n default -w
 
-# 查看详细信息
+# View detailed information
 kubectl describe ingress frontend -n default
 
-# 查看事件
+# View events
 kubectl get events -n default --sort-by='.lastTimestamp'
 ```
 
@@ -166,13 +166,13 @@ kubectl get events -n default --sort-by='.lastTimestamp'
 **Troubleshooting**:
 
 ```bash
-# 1. 确认 role ARN 正确
+# 1. Confirm role ARN is correct
 kubectl get sa aws-load-balancer-controller -n kube-system -o jsonpath='{.metadata.annotations.eks\.amazonaws\.com/role-arn}'
 
 # 2. Check role policies in AWS
 aws iam list-attached-role-policies --role-name k8s-practice-uat-alb-controller
 
-# 3. 查看详细的 IAM 策略
+# 3. View detailed IAM policy
 aws iam get-role-policy --role-name k8s-practice-uat-alb-controller --policy-name aws-load-balancer-controller-policy
 ```
 

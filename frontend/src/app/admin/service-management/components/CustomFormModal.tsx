@@ -253,18 +253,18 @@ export default function CustomFormModal({
 
   useMediaQuery(theme.breakpoints.down('sm'));
 
-  // 当modal打开或initialFields变化时，更新fields
+  // Update fields when the modal opens or initialFields changes.
   useEffect(() => {
     if (open) {
       if (initialFields && initialFields.length > 0) {
-        // 深拷贝初始字段，避免引用问题
+        // Deep clone initial fields to avoid reference issues.
         const clonedFields = initialFields.map(field => ({
           ...field,
           options: field.options ? [...field.options] : [],
         }));
         setFields(clonedFields);
       } else {
-        // 如果没有初始字段，设置默认字段
+        // If no initial fields are provided, use one default field.
         setFields([
           {
             id: '1',
@@ -314,20 +314,20 @@ export default function CustomFormModal({
 
   const handleDeleteField = (fieldId: string) => {
     if (fields.length > 1) {
-      // 多个字段时，直接删除
+      // If there are multiple fields, delete directly.
       setFields(prev => prev.filter(field => field.id !== fieldId));
     } else {
-      // 只有一个字段时，检查 label 是否为空
+      // If only one field remains, check whether label is empty.
       const currentField = fields.find(field => field.id === fieldId);
       if (currentField && currentField.label.trim() === '') {
-        // label 为空时，不允许删除
+        // Do not allow deletion when label is empty.
         // eslint-disable-next-line no-console
         console.log(
           'Cannot delete field with empty label. Please fill in the label first.',
         );
         return;
       } else {
-        // label 不为空时，清空内容但保留字段
+        // If label is not empty, clear content but keep the field.
         setFields(prev =>
           prev.map(field =>
             field.id === fieldId
@@ -336,7 +336,7 @@ export default function CustomFormModal({
                   label: '',
                   required: false,
                   options: [],
-                  type: 'short-answer', // 重置为默认类型
+                  type: 'short-answer', // Reset to default type
                 }
               : field,
           ),
@@ -398,10 +398,10 @@ export default function CustomFormModal({
 
   const handleCreate = () => {
     if (onSave) {
-      // 过滤掉空的字段（label为空的字段）
+      // Filter out empty fields (fields with empty label).
       const validFields = fields.filter(field => field.label.trim() !== '');
 
-      // 如果所有字段都是空的，至少保留一个默认字段
+      // If all fields are empty, keep at least one default field.
       if (validFields.length === 0) {
         validFields.push({
           id: Date.now().toString(),
@@ -418,7 +418,7 @@ export default function CustomFormModal({
   };
 
   const handleClose = () => {
-    // 如果没有任何字段或者所有字段都是空的，则重置为默认字段
+    // If there are no fields, or all fields are empty, reset to a default field.
     if (
       fields.length === 0 ||
       fields.every(field => field.label.trim() === '')
@@ -433,7 +433,7 @@ export default function CustomFormModal({
         },
       ]);
     }
-    // 否则保持当前字段状态，让用户下次打开时看到之前的内容
+    // Otherwise keep current field state so users can continue next time.
     onClose();
   };
 

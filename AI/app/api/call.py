@@ -47,15 +47,15 @@ async def ai_conversation(data: ConversationInput):
         callskeleton_dict = get_call_skeleton(data.callSid)
         callskeleton = CallSkeleton.model_validate(callskeleton_dict)
     except ValueError:
-        # Redis中没找到CallSkeleton - 业务逻辑错误，不是资源不存在
+        # CallSkeleton not found in Redis - business logic issue, not a missing resource
         raise HTTPException(status_code=422, detail="CallSkeleton not found")
     except ValidationError as e:
-        # 数据格式错误
+        # Invalid data format
         raise HTTPException(
             status_code=400, detail=f"Invalid CallSkeleton data format: {str(e)}"
         )
     except Exception as e:
-        # 其他服务器错误
+        # Other server errors
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
     # 2. Construct AI workflow state - 5-step workflow
