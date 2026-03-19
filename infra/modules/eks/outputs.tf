@@ -49,6 +49,16 @@ output "node_group_arn" {
 }
 
 output "oidc_provider_arn" {
+  description = "ARN of the OIDC Provider for IRSA"
+  value       = aws_iam_openid_connect_provider.eks.arn
+}
+
+output "oidc_issuer" {
+  description = "The URL on the EKS cluster OIDC Issuer"
+  value       = aws_eks_cluster.test1.identity[0].oidc[0].issuer
+}
+
+output "oidc_provider_arn" {
   description = "ARN of the OIDC provider for IRSA"
   value       = aws_iam_openid_connect_provider.eks.arn
 }
