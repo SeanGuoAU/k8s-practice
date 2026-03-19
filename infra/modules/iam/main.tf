@@ -144,7 +144,7 @@ data "aws_iam_policy_document" "github_actions_permissions" {
       "ecr:PutImage",
       "ecr:UploadLayerPart"
     ]
-    resources = ["arn:aws:ecr:*:*:repository/${var.ecr_repository_name}"]
+    resources = ["arn:aws:ecr:*:*:repository/${var.ecr_repository_name}/*"]
   }
 
   statement {
