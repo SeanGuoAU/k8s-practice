@@ -1,0 +1,68 @@
+name: Helm Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Docker image tag to deploy
+        required: true
+        default: latest
+        type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: ap-southeast-2
+  ECR_REPOSITORY: k8s-uat
+  EKS_CLUSTER_NAME: k8s-uat
+  IMAGE_NAME: frontend
+  AWS_ROLE_TO_ASSUME: arn:aws:iam::715227881960:role/github-actions-k8s-deploy-uat
+
+jobs:
+  deploy:
+    name: Deploy Helm Release
+    runs-on: ubuntu-latest
+    environment:
+      name: frontend-cd-approval
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate AWS role secret
+        run: |
+          if [ -z "${{ env.AWS_ROLE_TO_ASSUME }}" ]; then
+            echo "::error::AWS_ROLE_TO_ASSUME is empty."
+            exit 1
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          role-session-name: gh-helm-deploy
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --region $AWS_REGION \
+            --name $EKS_CLUSTER_NAME
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install frontend ./helm/frontend \
+            --namespace default \
+            --set image.repository=715227881960.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_REPOSITORY/$IMAGE_NAME \
+            --set image.tag=${{ inputs.image_tag }} \
+            --wait \
+            --timeout 120s

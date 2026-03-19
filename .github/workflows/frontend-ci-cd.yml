@@ -1,4 +1,4 @@
-name: Frontend CI/CD
+name: Frontend CI & Push
 
 on:
   workflow_dispatch:
@@ -87,10 +87,10 @@ jobs:
             --fail-on high || true
 
       - name: Build and scans complete
-        run: echo "Image build and scans completed. Proceeding to push and deploy."
+        run: echo "Image build and scans completed. Proceeding to push."
 
-  push-and-deploy:
-    name: Push Image & Deploy
+  push-image:
+    name: Push Image
     runs-on: ubuntu-latest
     needs: build-and-scan
 
@@ -136,24 +136,3 @@ jobs:
         run: |
           docker push $REGISTRY/$ECR_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
           docker push $REGISTRY/$ECR_REPOSITORY/$IMAGE_NAME:latest
-
-      - name: Install Helm
-        uses: azure/setup-helm@v4
-
-      - name: Update kubeconfig
-        run: |
-          aws eks update-kubeconfig \
-            --region $AWS_REGION \
-            --name $EKS_CLUSTER_NAME
-
-      - name: Deploy with Helm
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          helm upgrade --install frontend ./helm/frontend \
-            --namespace default \
-            --set image.repository=$REGISTRY/$ECR_REPOSITORY/$IMAGE_NAME \
-            --set image.tag=$IMAGE_TAG \
-            --wait \
-            --timeout 120s
