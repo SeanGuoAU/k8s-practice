@@ -13,3 +13,14 @@ crash.*.log
 *.tfvars.json
 !infra/environments/prod/prod.tfvars
 !infra/environments/uat/uat.tfvars
+
+/.pnpm-store
+/.next
+/node_modules
+*.tgz
+*.log
+*.tfstate*
+.env*
+
+# Helm offline chart package cache (local vendor/cache)
+helm/**/charts/*.tgz

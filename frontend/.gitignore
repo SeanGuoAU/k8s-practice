@@ -42,3 +42,6 @@ next-env.d.ts
 .env.prod
 .env.dev
 .env.local
+
+# pnpm store
+/.pnpm-store

@@ -1,0 +1,6 @@
+dependencies:
+- name: kite
+  repository: https://kite-org.github.io/kite/
+  version: 0.8.1
+digest: sha256:6a274ab24be0c9fb1515e1865b8abc653778f32445dcde5e0c776f28803a4d1a
+generated: "2026-03-22T03:48:50.786591484+11:00"

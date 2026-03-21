@@ -1,0 +1,22 @@
+argo-cd:
+  configs:
+    params:
+      server.insecure: true
+  server:
+    service:
+      type: LoadBalancer
+    ingress:
+      enabled: true
+      ingressClassName: alb
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/scheme: internet-facing
+        alb.ingress.kubernetes.io/target-type: ip
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
+        alb.ingress.kubernetes.io/healthcheck-path: /healthz
+  applicationSet:
+    enabled: true
+  repoServer:
+    autoscaling:
+      enabled: true
+      minReplicas: 2

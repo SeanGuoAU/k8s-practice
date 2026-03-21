@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: frontend-uat
+  name: ai-service-uat
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -13,11 +13,10 @@ spec:
   source:
     repoURL: https://github.com/SeanGuoAU/k8s-practice.git
     targetRevision: main
-    path: helm/frontend
+    path: helm/ai-service
     helm:
       valueFiles:
         - values.yaml
-        - values-uat.yaml
   syncPolicy:
     automated:
       prune: true

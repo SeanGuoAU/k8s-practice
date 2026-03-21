@@ -1,23 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: frontend-uat
+  name: kite
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: kube-system
   project: default
   source:
     repoURL: https://github.com/SeanGuoAU/k8s-practice.git
     targetRevision: main
-    path: helm/frontend
+    path: helm/kite
     helm:
       valueFiles:
         - values.yaml
-        - values-uat.yaml
   syncPolicy:
     automated:
       prune: true

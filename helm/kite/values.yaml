@@ -1,0 +1,10 @@
+# Default values for kite
+# This is a wrapper chart for the official Kite Helm chart
+kite:
+  # Add custom values here if needed
+  # For example:
+  # service:
+  #   type: LoadBalancer
+  # ingress:
+  #   enabled: true
+  #   className: alb

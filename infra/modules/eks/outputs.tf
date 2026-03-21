@@ -58,11 +58,6 @@ output "oidc_issuer" {
   value       = aws_eks_cluster.test1.identity[0].oidc[0].issuer
 }
 
-output "oidc_provider_arn" {
-  description = "ARN of the OIDC provider for IRSA"
-  value       = aws_iam_openid_connect_provider.eks.arn
-}
-
 output "oidc_provider_url" {
   description = "URL of the OIDC provider (without https://)"
   value       = local.oidc_issuer
